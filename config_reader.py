@@ -16,7 +16,7 @@ class ConfigReader:
         return self.config.getboolean("general", "save_output_locally", fallback=True)
     
     def get_output_directory(self):
-        return self.config.get("general", "output_directory", fallback="out")
+        return self.config.get("general", "output_directory", fallback="_out")
     
     # Connection configurations
     def get_remote_storage_connection_string(self):
