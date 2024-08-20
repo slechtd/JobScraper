@@ -18,10 +18,6 @@ class ConfigReader:
     def get_output_directory(self):
         return self.config.get("general", "output_directory", fallback="_out")
     
-    # Connection configurations
-    def get_remote_storage_connection_string(self):
-        return self.config.get("connection", "remote_storage_connection_string", fallback=None)
-    
     # Logger configurations
     def get_capture_level(self):
         return self.config.get("logger", "capture_level", fallback="DEBUG")

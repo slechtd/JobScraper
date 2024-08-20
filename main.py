@@ -1,4 +1,3 @@
-from file_manager import FileManager
 from utils import Utils
 from url_builder import UrlBuilder
 from network_manager import NetworkManager
@@ -20,7 +19,6 @@ class Main:
         self.network_manager = NetworkManager(self.logger, self.config_reader)
         self.url_builder = UrlBuilder(self.config_reader)
         self.utils = Utils(self.logger, self.network_manager, self.config_reader, self.url_builder)
-        self.file_manager = FileManager(self.logger, self.time_stamp, self.config_reader)
         self.salary_determiner = SalaryDeterminer(self.network_manager, self.url_builder, self.logger, self.config_reader)
 
         # Init Scraper
@@ -29,12 +27,16 @@ class Main:
             utils=self.utils,
             network_manager=self.network_manager,
             url_builder=self.url_builder,
-            file_manager=self.file_manager,
-            salary_determiner=self.salary_determiner
+            salary_determiner=self.salary_determiner,
+            time_stamp=self.time_stamp,
+            config_reader=self.config_reader
         )
 
     def start_scraping(self):
-        self.scraper.start_scraping()
+        try:
+            self.scraper.start_scraping()
+        finally:
+            self.logger.flush_logs()
 
 if __name__ == "__main__":
     main = Main()

@@ -1,9 +1,7 @@
-import logging
-from logging.handlers import RotatingFileHandler
 from threading import Lock
 from enum import Enum
-import os
-from datetime import datetime #remove?
+from output_manager import OutPutManager
+from datetime import datetime
 
 class LogLevel(Enum):
     DEBUG = 1
@@ -17,56 +15,28 @@ class Logger:
         self.config_reader = config_reader
         self.time_stamp = time_stamp
         self._lock = Lock()
-        self._initialize_logger()
-
-    def _initialize_logger(self):
-        with self._lock:
-            capture_level = self._get_log_level(self.config_reader.get_capture_level())
-            file_level = self._get_log_level(self.config_reader.get_file_level())
-            console_level = self._get_log_level(self.config_reader.get_console_level())
-
-            logger = logging.getLogger("ApplicationLogger")
-            logger.setLevel(capture_level)
-
-            log_dir = self.config_reader.get_output_directory()
-            os.makedirs(log_dir, exist_ok=True)
-
-            # Use the injected time_stamp for the log file name
-            log_file_name = f"{self.time_stamp}.log"
-            log_file_path = os.path.join(log_dir, log_file_name)
-
-            # File handler
-            file_handler = logging.FileHandler(log_file_path)
-            file_handler.setLevel(file_level)
-
-            # Console handler
-            console_handler = logging.StreamHandler()
-            console_handler.setLevel(console_level)
-
-            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-            file_handler.setFormatter(formatter)
-            console_handler.setFormatter(formatter)
-
-            logger.addHandler(file_handler)
-            logger.addHandler(console_handler)
-
-            self._logger = logger
-
-    def _get_log_level(self, level_str):
-        # Convert string log level from config to logging module level, default to DEBUG.
-        return getattr(logging, level_str.upper(), logging.DEBUG)
+        self.logs = []
+        self.output_manager = OutPutManager(self, self.time_stamp, self.config_reader)
 
     def _log(self, lvl: LogLevel, msg: str):
-        if lvl == LogLevel.DEBUG:
-            self._logger.debug(msg)
-        elif lvl == LogLevel.INFO:
-            self._logger.info(msg)
-        elif lvl == LogLevel.WARNING:
-            self._logger.warning(msg)
-        elif lvl == LogLevel.ERROR:
-            self._logger.error(msg, exc_info=True)
-        elif lvl == LogLevel.CRITICAL:
-            self._logger.critical(msg, exc_info=True)
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        log_entry = f"{timestamp} - {lvl.name} - {msg}"
+        print(log_entry)
+        with self._lock:
+            self.logs.append(log_entry)
+    
+    def flush_logs(self):
+        self.output_manager.save_logs(self.get_logs())
+        self._clear_logs()
+        self._scraping_completed()
+
+    def get_logs(self):
+        with self._lock:
+            return "\n".join(self.logs)
+
+    def _clear_logs(self):
+        with self._lock:
+            self.logs.clear()
 
     # Errors
     def error_general(self, error_message):
@@ -76,7 +46,7 @@ class Logger:
         self._log(LogLevel.ERROR, f"An error occurred while scraping page {page_number}: {error_message}")
 
     def error_initialising_job_listing(self, position, error_message):
-        self._log(LogLevel.WARNING, f"Error initializing JobListing at position {position}: {error_message}")
+        self._log(LogLevel.ERROR, f"Error initializing JobListing at position {position}: {error_message}")
 
     def error_salary_determination(self, error_message):
         self._log(LogLevel.ERROR, f"An error occurred during salary determination: {error_message}")
@@ -91,8 +61,8 @@ class Logger:
     def number_of_listings_on_page(self, total_listings, page_number):
         self._log(LogLevel.INFO, f"{total_listings} job listings found on page {page_number}.")
 
-    def scraping_completed(self):
-        self._log(LogLevel.INFO, "SCRAPING COMPLETED")
+    def _scraping_completed(self):
+        self._log(LogLevel.INFO, "SCRAPING COMPLETED, LOGS SAVED.")
 
     def listing_initialised(self, job_id):
         self._log(LogLevel.DEBUG, f"JobListing: {job_id} initialized successfully.")
