@@ -24,11 +24,11 @@ class ConfigReader:
     
     # Cloud connection configuration (used as environmental vars, NOT stored in config.ini)
     def get_azure_blob_connection_string(self):
-        return os.getenv("AZURE_BLOB_CONNECTION_STRING", self.config.get("connection", "azure_blob_connection_string", fallback=None))
+        return os.getenv("AZURE_BLOB_CONNECTION_STRING", None)
 
     def get_blob_container_name(self):
-        return os.getenv("BLOB_CONTAINER_NAME", self.config.get("connection", "blob_container_name", fallback="default-container"))
-    
+        return os.getenv("BLOB_CONTAINER_NAME", None)
+
     # Request configurations
     def get_delay_min(self):
         return self.config.getint("requests", "delay_min", fallback=1)
