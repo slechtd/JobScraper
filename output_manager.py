@@ -8,6 +8,7 @@ class OutPutManager:
         self.config_reader = config_reader
         self.save_locally = self.config_reader.get_save_output_locally()
         self.output_dir = self.config_reader.get_output_directory()
+        self.name_tag = self.config_reader.get_name_tag()
 
         if self.save_locally:
             os.makedirs(self.output_dir, exist_ok=True)
@@ -25,7 +26,7 @@ class OutPutManager:
             self._save_logs_to_cloud(logs)
 
     def _save_jobs_locally(self, jobs, page_number):
-        filename = f"jobs_{self.timestamp}_page_{page_number}.json"
+        filename = f"jobs_{self.name_tag}_{self.timestamp}_page_{page_number}.json"
         output_file = os.path.join(self.output_dir, filename)
         try:
             with open(output_file, 'w', encoding='utf-8') as f:

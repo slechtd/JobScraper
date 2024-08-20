@@ -1,4 +1,5 @@
 import configparser
+import os
 
 class ConfigReader:
     def __init__(self, config_path="config.ini"):
@@ -17,6 +18,16 @@ class ConfigReader:
     
     def get_output_directory(self):
         return self.config.get("general", "output_directory", fallback="_out")
+    
+    def get_name_tag(self):
+        return self.config.get("general", "name_tag", fallback="")
+    
+    # Cloud connection configuration (used as environmental vars, NOT stored in config.ini)
+    def get_azure_blob_connection_string(self):
+        return os.getenv("AZURE_BLOB_CONNECTION_STRING", self.config.get("connection", "azure_blob_connection_string", fallback=None))
+
+    def get_blob_container_name(self):
+        return os.getenv("BLOB_CONTAINER_NAME", self.config.get("connection", "blob_container_name", fallback="default-container"))
     
     # Request configurations
     def get_delay_min(self):
