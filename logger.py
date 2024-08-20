@@ -51,6 +51,28 @@ class Logger:
     def error_salary_determination(self, error_message):
         self._log(LogLevel.ERROR, f"An error occurred during salary determination: {error_message}")
 
+    def failed_to_save_jobs_locally(self, error_message):
+        self._log(LogLevel.ERROR, f"Failed to save jobs .json file locally: {error_message}")
+
+    def failed_to_save_logs_locally(self, error_message):
+        self._log(LogLevel.ERROR, f"Failed to save logs .log file locally: {error_message}")
+
+    def missing_connection_string(self):
+        self._log(LogLevel.ERROR, f"Missing connection string.")
+
+    def failed_blob_init(self):
+        self._log(LogLevel.ERROR, f"Failed to initialise BlobServiceClient.")
+
+    def failed_job_upload(self, error_message):
+        self._log(LogLevel.ERROR, f"Failed to upload jobs to cloud: {error_message}")
+
+    def failed_log_upload(self, error_message):
+        self._log(LogLevel.ERROR, f"Failed to upload logs to cloud: {error_message}")
+
+    # Cloud upload
+    def upload_successfull(self, filename):
+        self._log(LogLevel.INFO, f"Successfully uploaded {filename} to cloud storage.")
+
     # Scraping Process
     def pages_could_not_get_total(self):
         self._log(LogLevel.WARNING, "FAILED to get total number of pages, defaulting to 1.")
@@ -62,7 +84,7 @@ class Logger:
         self._log(LogLevel.INFO, f"{total_listings} job listings found on page {page_number}.")
 
     def _scraping_completed(self):
-        self._log(LogLevel.INFO, "SCRAPING COMPLETED, LOGS SAVED.")
+        self._log(LogLevel.INFO, "SCRAPING COMPLETED.")
 
     def listing_initialised(self, job_id):
         self._log(LogLevel.DEBUG, f"JobListing: {job_id} initialized successfully.")

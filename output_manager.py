@@ -1,17 +1,29 @@
 import os
 import json
+from azure.storage.blob import BlobServiceClient
 
 class OutPutManager:
     def __init__(self, logger, timestamp, config_reader):
         self.logger = logger
         self.timestamp = timestamp
         self.config_reader = config_reader
-        self.save_locally = self.config_reader.get_save_output_locally()
+        self.save_locally = self.config_reader.get_save_output_locally_instead_of_cloud()
         self.output_dir = self.config_reader.get_output_directory()
         self.name_tag = self.config_reader.get_name_tag()
-
+        
+        # Get Azure Blob Storage connection details
+        self.connection_string = self.config_reader.get_azure_blob_connection_string()
+        self.container_name = self.config_reader.get_blob_container_name()
+        
         if self.save_locally:
             os.makedirs(self.output_dir, exist_ok=True)
+        
+        # Initialize BlobServiceClient if connection string is provided
+        if self.connection_string:
+            self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
+        else:
+            self.logger.failed_blob_init()
+            self.blob_service_client = None
 
     def save_page_jobs(self, jobs, page_number):
         if self.save_locally:
@@ -33,21 +45,41 @@ class OutPutManager:
                 json.dump(jobs, f, ensure_ascii=False, indent=4)
             self.logger.saved_jobs(output_file)
         except Exception as e:
-            self.logger.error_general(f"Failed to save jobs locally: {e}")
+            self.logger.failed_to_save_jobs_locally()
 
     def _save_logs_locally(self, logs):
         log_filename = f"{self.timestamp}.log"
         log_file_path = os.path.join(self.output_dir, log_filename)
         try:
             with open(log_file_path, 'w', encoding='utf-8') as f:
-                f.write(logs)  # Write the collected logs to the file
+                f.write(logs)
         except Exception as e:
-            self.logger.error_general(f"Failed to save logs locally: {e}")
+            self.logger.failed_to_save_logs_locally()
 
     def _save_jobs_to_cloud(self, jobs, page_number):
-        # Placeholder for future cloud implementation
-        print("Saving jobs to cloud...")
+        if not self.blob_service_client:
+            self.logger.missing_connection_string()
+            return
+        
+        filename = f"jobs_{self.name_tag}_{self.timestamp}_page_{page_number}.json"
+        try:
+            # Convert jobs to JSON string
+            jobs_json = json.dumps(jobs, ensure_ascii=False, indent=4)
+            blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=filename)
+            blob_client.upload_blob(jobs_json)
+            self.logger.upload_successfull(filename)
+        except Exception as e:
+            self.logger.failed_job_upload(e)
 
     def _save_logs_to_cloud(self, logs):
-        # Placeholder for future cloud implementation
-        print("Saving logs to cloud...")
+        if not self.blob_service_client:
+            self.logger.missing_connection_string()
+            return
+        
+        log_filename = f"{self.timestamp}.log"
+        try:
+            blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=log_filename)
+            blob_client.upload_blob(logs)
+            self.logger.upload_successfull(log_filename)
+        except Exception as e:
+            self.logger.failed_log_upload(e)

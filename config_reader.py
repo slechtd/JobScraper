@@ -13,8 +13,8 @@ class ConfigReader:
     def get_scrape_full_job_pages(self):
         return self.config.getboolean("general", "scrape_full_job_pages", fallback=False)
     
-    def get_save_output_locally(self):
-        return self.config.getboolean("general", "save_output_locally", fallback=True)
+    def get_save_output_locally_instead_of_cloud(self):
+        return self.config.getboolean("general", "save_output_locally_instead_of_cloud", fallback=True)
     
     def get_output_directory(self):
         return self.config.get("general", "output_directory", fallback="_out")
