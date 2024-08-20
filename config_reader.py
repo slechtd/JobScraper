@@ -18,16 +18,6 @@ class ConfigReader:
     def get_output_directory(self):
         return self.config.get("general", "output_directory", fallback="_out")
     
-    # Logger configurations
-    def get_capture_level(self):
-        return self.config.get("logger", "capture_level", fallback="DEBUG")
-
-    def get_console_level(self):
-        return self.config.get("logger", "console_level", fallback="INFO")
-
-    def get_file_level(self):
-        return self.config.get("logger", "file_level", fallback="DEBUG")
-    
     # Request configurations
     def get_delay_min(self):
         return self.config.getint("requests", "delay_min", fallback=1)

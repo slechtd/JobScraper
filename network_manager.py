@@ -10,7 +10,6 @@ class NetworkManager:
         self._last_request_time = 0
         self._request_lock = Lock()
 
-        # Read configuration values
         self.delay_min = self.config_reader.get_delay_min()
         self.delay_max = self.config_reader.get_delay_max()
         self.sleep_time = self.config_reader.get_sleep_time()
@@ -42,6 +41,6 @@ class NetworkManager:
                     time.sleep(self.sleep_time)
                 except requests.exceptions.RequestException as e:
                     self.logger.request_error({e})
-                    break  # Exit the loop if it's another type of request exception
+                    break
             self.logger.request_failed_retries(url, self.retries)
-            return None  # Return None if all retries fail
+            return None

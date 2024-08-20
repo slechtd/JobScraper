@@ -20,7 +20,7 @@ class Scraper:
             total_pages = self.utils.get_total_pages()
             for page_number in range(1, total_pages + 1):
                 self.logger.scraping_page(page_number, total_pages)
-                page_url = f"{general_url}&page={page_number}"  # Can be moved to the URL builder !!!!!!!!!!!!!!!!!!
+                page_url = f"{general_url}&page={page_number}"  # TODO: Move to the URL builder ?
                 self._process_page(page_url, page_number)
         except AttributeError:
             self.logger.error_general("URL not found")

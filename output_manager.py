@@ -6,10 +6,9 @@ class OutPutManager:
         self.logger = logger
         self.timestamp = timestamp
         self.config_reader = config_reader
-        self.save_locally = self.config_reader.get_save_output_locally() # temp !!!!!!!!!!!!!!!!!!!!!!!!!
+        self.save_locally = self.config_reader.get_save_output_locally()
         self.output_dir = self.config_reader.get_output_directory()
 
-        # Ensure the output directory exists
         if self.save_locally:
             os.makedirs(self.output_dir, exist_ok=True)
 
@@ -28,7 +27,6 @@ class OutPutManager:
     def _save_jobs_locally(self, jobs, page_number):
         filename = f"jobs_{self.timestamp}_page_{page_number}.json"
         output_file = os.path.join(self.output_dir, filename)
-        
         try:
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(jobs, f, ensure_ascii=False, indent=4)
@@ -39,11 +37,9 @@ class OutPutManager:
     def _save_logs_locally(self, logs):
         log_filename = f"{self.timestamp}.log"
         log_file_path = os.path.join(self.output_dir, log_filename)
-
         try:
             with open(log_file_path, 'w', encoding='utf-8') as f:
                 f.write(logs)  # Write the collected logs to the file
-            #self.logger._log(LogLevel.INFO, f"Logs saved at: {log_file_path}") # ??????????????
         except Exception as e:
             self.logger.error_general(f"Failed to save logs locally: {e}")
 
