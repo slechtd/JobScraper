@@ -60,8 +60,11 @@ class Logger:
     def missing_connection_string(self):
         self._log(LogLevel.ERROR, f"Missing connection string.")
 
-    def failed_blob_init(self):
-        self._log(LogLevel.ERROR, f"Failed to initialise BlobServiceClient.")
+    def failed_blob_init_no_string(self):
+        self._log(LogLevel.ERROR, f"Failed to initialise BlobServiceClient: No connection string.")
+
+    def failed_blob_init(self, error_message):
+        self._log(LogLevel.ERROR, f"Failed to initialise BlobServiceClient: {error_message}")
 
     def failed_job_upload(self, error_message):
         self._log(LogLevel.ERROR, f"Failed to upload jobs to cloud: {error_message}")
@@ -69,7 +72,10 @@ class Logger:
     def failed_log_upload(self, error_message):
         self._log(LogLevel.ERROR, f"Failed to upload logs to cloud: {error_message}")
 
-    # Cloud upload
+    # Cloud
+    def blob_client_init_successfull(self):
+        self._log(LogLevel.INFO, f"SUCCESSFULLY initialised BlobServiceClient")
+
     def upload_successfull(self, filename):
         self._log(LogLevel.INFO, f"Successfully uploaded {filename} to cloud storage.")
 

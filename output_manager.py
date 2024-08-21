@@ -18,11 +18,16 @@ class OutPutManager:
         if self.save_locally:
             os.makedirs(self.output_dir, exist_ok=True)
         
-        # Initialize BlobServiceClient if connection string is provided
+        # Initialize BlobServiceClient if connection string is provided.
         if self.connection_string:
-            self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
+            try:
+                self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
+                self.logger.blob_client_init_successfull()
+            except Exception as e:
+                self.logger.failed_blob_init(e)
+                self.blob_service_client = None
         else:
-            self.logger.failed_blob_init()
+            self.logger.failed_blob_init_no_string()
             self.blob_service_client = None
 
     def save_page_jobs(self, jobs, page_number):
