@@ -11,6 +11,7 @@ class Scraper:
         self.salary_determiner = salary_determiner
         self.time_stamp = time_stamp
         self.config_reader = config_reader
+        self.scrape_url = self.config_reader.get_general_scrape_url()
 
         self.output_manager = OutPutManager(self.logger, self.time_stamp, self.config_reader)
     
@@ -39,14 +40,14 @@ class Scraper:
                 return
 
             self.logger.number_of_listings_on_page(len(job_sections), page_number)
-            jobs = [self._process_job_section(job_section, index + 1) for index, job_section in enumerate(job_sections)]
+            jobs = [self._process_job_section(job_section, index + 1, page_number) for index, job_section in enumerate(job_sections)]
             self.output_manager.save_page_jobs([job for job in jobs if job is not None], page_number)
         except Exception as e:
             self.logger.error_scraping_page({e})
         
-    def _process_job_section(self, job_section, search_position):
+    def _process_job_section(self, job_section, search_position, page_number):
         try:
-            job = JobListing(job_section, search_position, self.logger, self.utils, self.salary_determiner)
+            job = JobListing(job_section, search_position, self.logger, self.utils, self.salary_determiner, self.time_stamp, page_number, self.scrape_url)
             return job.to_dict()
         except Exception as e:
             self.logger.error_general({e})

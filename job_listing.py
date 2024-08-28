@@ -7,11 +7,15 @@ class PageTypes(Enum):
     UNKNOWN = "unknown"
 
 class JobListing:
-    def __init__(self, job_section, search_position, logger, utils, salary_determiner):
+    def __init__(self, job_section, search_position, logger, utils, salary_determiner, time_stamp, page_number, scrape_url):
         self.job_section = job_section
         self.logger = logger
         self.utils = utils
         self.salary_determiner = salary_determiner
+        self.search_position = search_position
+        self.time_stamp = time_stamp
+        self.page_number = page_number
+        self.scrape_url = scrape_url
         self.title_tag = self._get_title_tag()
         try:
             self.job_id = self._extract_job_id()
@@ -19,7 +23,6 @@ class JobListing:
             self.company = self._extract_company()
             self.location = self._extract_location()
             self.creation_date = self._extract_creation_date()
-            self.search_position = search_position
             self.tip = self._extract_tip()
             self.tags = self._extract_tags()
             self.displayed_salary_range = self._extract_salary()
@@ -35,11 +38,14 @@ class JobListing:
 
     def to_dict(self):
         return {
+            "execution_timestamp": self.time_stamp,
             "job_id": self.job_id,
+            "scrape_url": self.scrape_url,
             "title": self.title,
             "company": self.company,
             "location": self.location,
             "creation_date": self.creation_date,
+            "page_number": self.page_number,
             "search_position": self.search_position,
             "tip": self.tip,
             "tags": self.tags,
