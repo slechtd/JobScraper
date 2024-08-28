@@ -33,6 +33,11 @@ class Scraper:
             response = self.network_manager.throttled_request(url)
             soup = BeautifulSoup(response.content, "html.parser")
             job_sections = soup.find_all("article", class_="SearchResultCard")
+
+            if not job_sections:
+                self.logger.no_jobs_found()
+                return
+
             self.logger.number_of_listings_on_page(len(job_sections), page_number)
             jobs = [self._process_job_section(job_section, index + 1) for index, job_section in enumerate(job_sections)]
             self.output_manager.save_page_jobs([job for job in jobs if job is not None], page_number)

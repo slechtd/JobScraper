@@ -1,4 +1,5 @@
 from enum import Enum
+import base64
 
 class PageTypes(Enum):
     DEFAULT = "default"
@@ -35,31 +36,21 @@ class JobListing:
     def to_dict(self):
         return {
             "job_id": self.job_id,
-            "general": {
-                "title": self.title,
-                "company": self.company,
-                "location": self.location,
-                "creation_date": self.creation_date
-            },
-            "promotion": {
-                "search_position": self.search_position,
-                "tip": self.tip
-            },
+            "title": self.title,
+            "company": self.company,
+            "location": self.location,
+            "creation_date": self.creation_date,
+            "search_position": self.search_position,
+            "tip": self.tip,
             "tags": self.tags,
-            "salary": {
-                "displayed_range": self.displayed_salary_range,
-                "determined_max": self.determined_max_salary
-            },
-            "atmoskop": {
-                "url": self.atmoskop_url,
-                "reviews": self.atmoskop_reviews
-            },
-            "detail_page": {
-                "url": self.url,
-                "type": self.page_type.value,
-                "source": self.page_source
+            "displayed_salary_range": self.displayed_salary_range,
+            "determined_max_salary": self.determined_max_salary,
+            "atmoskop_url": self.atmoskop_url,
+            "reviews": self.atmoskop_reviews,
+            "detail_page_url": self.url,
+            "detail_page_type": self.page_type.value,
+            "detail_page_source_b64": self.page_source
             }
-        }
     
     def _get_title_tag(self):
         return self.job_section.find("h2", class_="SearchResultCard__title")
@@ -119,4 +110,7 @@ class JobListing:
             return PageTypes.UNKNOWN
     
     def _fetch_page_source(self, url):
-        return self.utils.fetch_source_code(url)
+        source_code = self.utils.fetch_source_code(url)
+        source_code_bytes = source_code.encode('utf-8')
+        base64_encoded_source = base64.b64encode(source_code_bytes)
+        return base64_encoded_source.decode('utf-8')

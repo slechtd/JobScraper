@@ -80,6 +80,9 @@ class Logger:
         self._log(LogLevel.INFO, f"Successfully uploaded {filename} to cloud storage.")
 
     # Scraping Process
+    def no_jobs_found(self, page_number):
+        self._log(LogLevel.INFO, f"Page: {page_number}. NO JOBS FOUND. It's probably the weekend and even HR rests.")
+
     def pages_could_not_get_total(self):
         self._log(LogLevel.WARNING, "FAILED to get total number of pages, defaulting to 1.")
 
