@@ -9,7 +9,6 @@ class OutPutManager:
         self.config_reader = config_reader
         self.save_locally = self.config_reader.get_save_output_locally_instead_of_cloud()
         self.output_dir = self.config_reader.get_output_directory()
-        self.name_tag = self.config_reader.get_name_tag()
         
         # Get Azure Blob Storage connection details
         self.connection_string = self.config_reader.get_azure_blob_connection_string()
@@ -43,7 +42,7 @@ class OutPutManager:
             self._save_logs_to_cloud(logs)
 
     def _save_jobs_locally(self, jobs, page_number):
-        filename = f"jobs_{self.name_tag}_{self.timestamp}_page_{page_number}.json"
+        filename = f"jobs_{self.timestamp}_{page_number}.json"
         output_file = os.path.join(self.output_dir, filename)
         try:
             with open(output_file, 'w', encoding='utf-8') as f:
@@ -66,7 +65,7 @@ class OutPutManager:
             self.logger.missing_connection_string()
             return
         
-        filename = f"jobs_{self.name_tag}_{self.timestamp}_page_{page_number}.json"
+        filename = f"jobs_{self.timestamp}_{page_number}.json"
         try:
             # Convert jobs to JSON string
             jobs_json = json.dumps(jobs, ensure_ascii=False, indent=4)

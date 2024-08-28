@@ -19,9 +19,6 @@ class ConfigReader:
     def get_output_directory(self):
         return self.config.get("general", "output_directory", fallback="_out")
     
-    def get_name_tag(self):
-        return self.config.get("general", "name_tag", fallback="")
-    
     # Cloud connection configuration (used as environmental vars, NOT stored in config.ini)
     def get_azure_blob_connection_string(self):
         return os.getenv("AZURE_BLOB_CONNECTION_STRING", None)
