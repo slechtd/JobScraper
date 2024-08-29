@@ -1,3 +1,4 @@
 azure_storage_blob==12.19.0
 beautifulsoup4==4.12.3
 Requests==2.32.3
+playwright==1.31.0

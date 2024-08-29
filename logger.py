@@ -72,6 +72,9 @@ class Logger:
     def failed_log_upload(self, error_message):
         self._log(LogLevel.ERROR, f"Failed to upload logs to cloud: {error_message}")
 
+    def error_playwright(self, error_message):
+        self._log(LogLevel.ERROR, f"An exception occured while getting visible text with PlayWright: {error_message}")
+
     # Cloud
     def blob_client_init_successfull(self):
         self._log(LogLevel.INFO, f"SUCCESSFULLY initialised BlobServiceClient")

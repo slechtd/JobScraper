@@ -1,11 +1,6 @@
 from enum import Enum
 import base64
 
-class PageTypes(Enum):
-    DEFAULT = "default"
-    CUSTOM = "custom"
-    UNKNOWN = "unknown"
-
 class JobListing:
     def __init__(self, job_section, search_position, logger, utils, salary_determiner, time_stamp, page_number, scrape_url):
         self.job_section = job_section
@@ -29,8 +24,7 @@ class JobListing:
             self.determined_max_salary = self._determine_max_salary() if self.displayed_salary_range is None else None
             self.atmoskop_url, self.atmoskop_reviews = self._extract_atmoskop_info()
             self.url = self._extract_url()
-            self.page_type = self._determine_page_type(self.url)
-            self.page_source = self._fetch_page_source(self.url)
+            self.page_text = self.utils.fetch_detail_text(self.url)
             self.logger.listing_initialised(self.job_id)
         except Exception as e:
             self.logger.error_initialising_job_listing(search_position, e)
@@ -54,8 +48,7 @@ class JobListing:
             "atmoskop_url": self.atmoskop_url,
             "reviews": self.atmoskop_reviews,
             "detail_page_url": self.url,
-            "detail_page_type": self.page_type.value,
-            "detail_page_source_b64": self.page_source
+            "detail_page_text": self.page_text
             }
     
     def _get_title_tag(self):
@@ -106,17 +99,3 @@ class JobListing:
     def _extract_url(self):
         url_tag = self.title_tag.find("a") if self.title_tag else None
         return url_tag["href"] if url_tag else None
-
-    def _determine_page_type(self, url):
-        if url.startswith("https://www.jobs.cz/"):
-            return PageTypes.DEFAULT
-        elif ".jobs.cz" in url:
-            return PageTypes.CUSTOM
-        else:
-            return PageTypes.UNKNOWN
-    
-    def _fetch_page_source(self, url):
-        source_code = self.utils.fetch_source_code(url)
-        source_code_bytes = source_code.encode('utf-8')
-        base64_encoded_source = base64.b64encode(source_code_bytes)
-        return base64_encoded_source.decode('utf-8')
