@@ -129,14 +129,20 @@ class Logger:
     def request_error(self, error_message):
         self._log(LogLevel.CRITICAL, f"AN ERROR OCCURRED: {error_message}")
 
+    def slack_request_error(self, error_message):
+        self._log(LogLevel.ERROR, f"AN ERROR OCCURRED: {error_message}")
+
     def request_failed_will_retry(self, url, status_code):
         self._log(LogLevel.DEBUG, f"Request to {url} failed with status code {status_code}. Retrying in 5 seconds...")
 
     def request_timeout_will_retry(self, url, attempt, retries):
-        self._log(LogLevel.CRITICAL, f"TIMEOUT occurred for {url}. Retrying ({attempt + 1}/{retries})...")
+        self._log(LogLevel.ERROR, f"TIMEOUT occurred for {url}. Retrying ({attempt + 1}/{retries})...")
 
     def request_failed_retries(self, url, retries):
         self._log(LogLevel.CRITICAL, f"FAILED TO RETRIEVE DATA FROM: {url} AFTER {retries} ATTEMPTS.")
+
+    def no_slack_webhook(self):
+        self._log(LogLevel.WARNING, "Slack hook URL is not set. Notification will not be sent.")
 
     # Output
     def saved_jobs(self, file):

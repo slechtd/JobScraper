@@ -35,8 +35,12 @@ class Main:
     def start_scraping(self):
         try:
             self.scraper.start_scraping()
+        except Exception as e:
+            self.logger.error_general(e)
+            self.network_manager.send_slack_error_notif(self.time_stamp, e)
         finally:
             self.logger.flush_logs()
+            self.network_manager.send_slack_finish_notif(self.time_stamp)
 
 if __name__ == "__main__":
     main = Main()

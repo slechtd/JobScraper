@@ -19,12 +19,16 @@ class ConfigReader:
     def get_output_directory(self):
         return self.config.get("general", "output_directory", fallback="_out")
     
-    # Cloud connection configuration (used as environmental vars, NOT stored in config.ini)
+    # Cloud connection configuration
     def get_azure_blob_connection_string(self):
         return os.getenv("AZURE_BLOB_CONNECTION_STRING", None)
 
     def get_blob_container_name(self):
         return os.getenv("BLOB_CONTAINER_NAME", None)
+    
+    # Slack notification webhook
+    def get_slack_hook_url(self):
+        return os.getenv("SLACK_WEBHOOK", None)
 
     # Request configurations
     def get_delay_min(self):
