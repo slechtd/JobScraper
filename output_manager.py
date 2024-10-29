@@ -12,8 +12,9 @@ class OutPutManager:
         
         # Get Azure Blob Storage connection details
         self.connection_string = self.config_reader.get_azure_blob_connection_string()
-        self.container_name = self.config_reader.get_blob_container_name()
-        
+        self.job_container_name = self.config_reader.get_job_container_name()
+        self.log_container_name = self.config_reader.get_log_container_name()
+
         if self.save_locally:
             os.makedirs(self.output_dir, exist_ok=True)
         
@@ -69,7 +70,7 @@ class OutPutManager:
         try:
             # Convert jobs to JSON string
             jobs_json = json.dumps(jobs, ensure_ascii=False, indent=4)
-            blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=filename)
+            blob_client = self.blob_service_client.get_blob_client(container=self.job_container_name, blob=filename)
             blob_client.upload_blob(jobs_json)
             self.logger.upload_successfull(filename)
         except Exception as e:
@@ -82,7 +83,7 @@ class OutPutManager:
         
         log_filename = f"{self.timestamp}.log"
         try:
-            blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=log_filename)
+            blob_client = self.blob_service_client.get_blob_client(container=self.log_container_name, blob=log_filename)
             blob_client.upload_blob(logs)
             self.logger.upload_successfull(log_filename)
         except Exception as e:

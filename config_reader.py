@@ -23,8 +23,11 @@ class ConfigReader:
     def get_azure_blob_connection_string(self):
         return os.getenv("AZURE_BLOB_CONNECTION_STRING", None)
 
-    def get_blob_container_name(self):
-        return os.getenv("BLOB_CONTAINER_NAME", None)
+    def get_job_container_name(self):
+        return os.getenv("JOB_CONTAINER_NAME", None)
+    
+    def get_log_container_name(self):
+        return os.getenv("LOG_CONTAINER_NAME", None)
     
     # Slack notification webhook
     def get_slack_hook_url(self):
